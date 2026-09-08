@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Archive // FOR ZKF</title>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #d8cde3;
+            --win-bg: #f4eeeb;
+            --win-header: #9b89b3;
+            --win-header-text: #ffffff;
+            --win-border: #7c6895;
+            --accent-pink: #ffb7c5;
+            --text-color: #4a3e56;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Courier New', 'MS Gothic', 'PingFang SC', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#bca9cf 1px, transparent 0);
+            background-size: 16px 16px;
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #entrance-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(216, 205, 227, 0.95);
+            z-index: 999999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .envelope-card {
+            background: #fff5f7;
+            border: 3px solid var(--win-border);
+            border-radius: 8px;
+            padding: 30px;
+            width: 380px;
+            text-align: center;
+            box-shadow: 8px 8px 0px var(--win-border);
+        }
+
+        .envelope-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8a629b;
+            margin-bottom: 15px;
+        }
+
+        .enter-btn {
+            background: #ffc2d1;
+            border: 2px solid #7c6895;
+            padding: 6px 16px;
+            color: #4a3e56;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #7c6895;
+            margin-top: 15px;
+            transition: all 0.1s;
+        }
+
+        .enter-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #7c6895;
+        }
+
+        #desktop {
+            width: 100vw;
+            height: calc(100vh - 35px);
+            position: relative;
+        }
+
+        .desktop-icons {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .icon-item {
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px dashed transparent;
+            border-radius: 4px;
+        }
+
+        .icon-item:hover {
+            border-color: var(--win-border);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .icon-img {
+            width: 40px;
+            height: 40px;
+            background: #ffc2d1;
+            border: 2px solid var(--win-border);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin-bottom: 5px;
+            box-shadow: 2px 2px 0px var(--win-border);
+        }
+
+        .icon-text {
+            font-size: 11px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .desktop-buddy {
+            position: absolute;
+            right: 120px;
+            bottom: 50px;
+            width: 100px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .buddy-avatar {
+            width: 70px;
+            height: 70px;
+            background: #fff;
+            border: 2px solid var(--win-border);
+            border-radius: 50%;
+            display: inline-block;
+            line-height: 70px;
+            font-size: 35px;
+            box-shadow: 3px 3px 0px var(--win-border);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .win-window {
+            position: absolute;
+            background: var(--win-bg);
+            border: 2px solid var(--win-border);
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+            min-width: 320px;
+            min-height: 200px;
+            resize: both;
+            overflow: hidden;
+        }
+
+        .win-header {
+            background: var(--win-header);
+            color: var(--win-header-text);
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            flex-shrink: 0;
+        }
+
+        .win-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .win-btn {
+            background: #ff8fa3;
+            border: 1px solid #7c6895;
+            color: white;
+            width: 16px;
+            height: 16px;
+            line-height: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .win-btn.max-btn {
+            background: #b5e2fa;
+            color: #4a3e56;
+        }
+
+        .win-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+            height: calc(100% - 25px);
+            color: var(--text-color);
+        }
+
+        .manual-badge {
+            font-size: 11px;
+            font-weight: bold;
+            background: #e2d2f0;
+            border: 1px dashed #7c6895;
+            padding: 3px 8px;
+            margin-bottom: 10px;
+            display: inline-block;
+            color: #5c4475;
+        }
+
+        .mail-nav-item {
+            font-size: 11px;
+            padding: 6px 4px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mail-nav-item.active {
+            background: #e0d5ec;
+            border-color: var(--win-border);
+            font-weight: bold;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            width: 100%;
+            height: 100%;
+            background: #eae2f0;
+            border: 2px inset #fff;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .card-container {
+            background-color: transparent;
+            height: 300px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border: 2px solid var(--win-border);
+            background: #ffffff;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .card-front .img-box {
+            width: 100%;
+            height: 240px;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--win-border);
+            position: relative;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .zoom-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            font-size: 10px;
+            padding: 2px 6px;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(255, 183, 197, 0.9);
+            color: #000;
+        }
+
+        .card-front .label {
+            height: 56px;
+            background: #f4eeeb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .card-front .hint {
+            font-size: 10px;
+            color: #8a629b;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: #fff5f7;
+            padding: 12px;
+            justify-content: space-between;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .card-back .tag {
+            font-size: 10px;
+            background: var(--win-header);
+            color: #ffffff;
+            padding: 2px 6px;
+            font-weight: bold;
+            border-radius: 2px;
+        }
+
+        .card-back .text-content {
+            font-size: 11px;
+            line-height: 1.6;
+            color: var(--text-color);
+            width: 100%;
+            margin: auto 0;
+            background: #ffffff;
+            border: 1px inset #ccc;
+            padding: 10px;
+            word-break: break-all;
+        }
+
+        .card-back .flip-back-hint {
+            font-size: 10px;
+            color: #888;
+            align-self: flex-end;
+        }
+
+        .image-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+
+        .image-modal-overlay img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border: 3px solid #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        #quiz-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        #quiz-question {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            background: #ffffff;
+            padding: 10px;
+            border: 1px inset #ccc;
+            line-height: 1.5;
+        }
+
+        #quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+            background: #ffffff;
+            border: 2px solid var(--win-border);
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-color);
+            font-weight: bold;
+            box-shadow: 2px 2px 0px var(--win-border);
+            transition: background 0.2s;
+        }
+
+        .quiz-option.selected {
+            background: #d8cde3;
+            border-color: #8a629b;
+        }
+
+        .quiz-option:hover {
+            background: #ffc2d1;
+        }
+
+        .quiz-msg {
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #d90429;
+            text-align: center;
+            min-height: 18px;
+        }
+
+        .shake-animation {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        .doc-link-card {
+            background: #ffffff;
+            border: 1px inset #ccc;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .doc-download-link {
+            color: #0056b3;
+            text-decoration: underline;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .doc-download-link:hover {
+            color: #002a80;
+        }
+
+        #taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 35px;
+            background: #c3b1d6;
+            border-top: 2px solid var(--win-border);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+            z-index: 99999;
+        }
+
+        .start-btn {
+            background: #ffc2d1;
+            border: 2px solid var(--win-border);
+            padding: 2px 10px;
+            font-weight: bold;
+            font-size: 12px;
+            box-shadow: 2px 2px 0px #fff inset;
+            cursor: pointer;
+        }
+
+        .gal-container {
+            width: 100%;
+            height: 100%;
+            background: #fff0f5;
+            border: 2px solid var(--win-border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Courier New', 'MS Gothic', 'PingFang SC', sans-serif;
+            transition: background 0.5s ease;
+            cursor: pointer;
+        }
+
+        .gal-status-bar {
+            background: rgba(255, 240, 245, 0.85);
+            color: #4a3e56;
+            padding: 4px 8px;
+            font-size: 10px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e0b0d0;
+            z-index: 10;
+            font-weight: bold;
+        }
+
+        .gal-stats {
+            display: flex;
+            gap: 10px;
+            color: #d8507c;
+        }
+
+        .gal-scene {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            background: linear-gradient(180deg, #ffe4e1 0%, #fff0f5 100%);
+            overflow: hidden;
+            transition: background 0.5s ease;
+        }
+
+        .bg-element {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.25;
+            font-size: 80px;
+            z-index: 1;
+        }
+
+        .gal-char {
+            height: 82%;
+            image-rendering: pixelated;
+            object-fit: contain;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.2s ease, filter 0.3s ease;
+        }
+
+        .gal-char.female {
+            height: 82%;
+        }
+
+        .gal-char-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .char-bounce {
+            animation: charBounce 0.5s ease infinite alternate;
+        }
+        @keyframes charBounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-12px); }
+        }
+
+        .char-shake {
+            animation: charShake 0.3s ease infinite;
+        }
+        @keyframes charShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px) rotate(-2deg); }
+            75% { transform: translateX(8px) rotate(2deg); }
+        }
+
+        .char-grow {
+            animation: charGrow 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes charGrow {
+            0% { transform: scale(0.6); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .gal-center-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .gal-otome-option {
+            width: 80%;
+            max-width: 360px;
+            padding: 12px 18px;
+            background: #ffffff;
+            border: 2px solid #b87b9c;
+            color: #5a384c;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #b87b9c;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+            line-height: 1.4;
+        }
+
+        .gal-otome-option:hover {
+            background: #ffc2d1;
+            color: #4a3e56;
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px #8a629b;
+        }
+
+        .gal-otome-input-group {
+            display: flex;
+            gap: 8px;
+            width: 80%;
+            max-width: 360px;
+        }
+
+        .gal-otome-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #b87b9c;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            box-shadow: 2px 2px 0px #b87b9c;
+        }
+
+        .gal-dialog-box {
+            height: 120px;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 2px solid var(--win-border);
+            padding: 10px 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 15;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .gal-speaker {
+            font-size: 11px;
+            font-weight: bold;
+            color: #ffffff;
+            background: #9b89b3;
+            padding: 2px 10px;
+            border-radius: 10px;
+            align-self: flex-start;
+            border: 1px solid var(--win-border);
+            margin-bottom: 4px;
+        }
+
+        .gal-text {
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.6;
+            flex: 1;
+            overflow-y: auto;
+            white-space: pre-line;
+            font-weight: bold;
+        }
+
+        .gal-toast {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(217, 80, 120, 0.95);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 30;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 1px solid #fff;
+        }
+
+        .cake-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(40, 25, 45, 0.88);
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .cake-graphic {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            margin: 20px 0;
+            filter: drop-shadow(0 0 15px rgba(255,183,197,0.6));
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cake-graphic:hover {
+            transform: scale(1.03);
+        }
+
+        .cake-image-box {
+            position: relative;
+            width: 280px;
+            max-width: 80%;
+            max-height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cake-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+            display: block;
+            border: 2px solid #ffc2d1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            background-color: #000;
+        }
+
+        .candle-flame {
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            z-index: 10;
+            animation: flameFlicker 0.6s infinite alternate;
+        }
+
+        @keyframes flameFlicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); opacity: 0.9; }
+            100% { transform: translateX(-50%) scale(1.15) rotate(2deg); opacity: 1; }
+        }
+
+        .wish-hint {
+            font-size: 13px;
+            color: #ffc2d1;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .envelope-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .interactive-envelope {
+            width: 220px;
+            height: 140px;
+            background: #ffb7c5;
+            border: 3px solid #7c6895;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .interactive-envelope:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .envelope-seal {
+            width: 40px;
+            height: 40px;
+            background: #d8507c;
+            border-radius: 50%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .letter-paper {
+            width: 88%;
+            height: 85%;
+            background: #fffdf9;
+            border: 2px solid #7c6895;
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            animation: letterOpen 0.5s ease-out forwards;
+            position: relative;
+        }
+
+        @keyframes letterOpen {
+            0% { transform: scale(0.2) translateY(50px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .letter-content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            padding-right: 8px;
+        }
+
+        .letter-footer-zip {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px dashed #7c6895;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fdf5f7;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .letter-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: #ffc2d1;
+            border: 1px solid #7c6895;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            line-height: 18px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            color: #4a3e56;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="image-modal" class="image-modal-overlay" onclick="closeImageModal()">
+        <img id="modal-img" src="" alt="放大查看">
+    </div>
+
+    <div id="entrance-screen">
+        <div class="envelope-card">
+            <div class="envelope-title">✉️ FOR ZKF</div>
+            <p style="font-size: 13px; line-height: 1.8; margin-top: 10px;">
+                生日快乐！私の凯风酱（？<br>
+                不管了，准备好面对19岁的世界了吗？
+            </p>
+            <button class="enter-btn" onclick="openSystem()">ENTER GIFT →</button>
+        </div>
+    </div>
+
+    <div id="desktop">
+
+        <div class="desktop-icons">
+            <div class="icon-item" onclick="toggleWin('win-mailbox')">
+                <div class="icon-img">📬</div>
+                <div class="icon-text">饲养手册<br>Manual</div>
+            </div>
+            <div class="icon-item" onclick="toggleWin('win-photos')">
+                <div class="icon-img">🖼️</div>
+                <div class="icon-text">相册抽屉<br>19 Cards</div>
+            </div>
+            <div class="icon-item" onclick="toggleWin('win-game')">
+                <div class="icon-img">🎮</div>
+                <div class="icon-text">张凯风养成记<br>Interactive</div>
+            </div>
+            <div class="icon-item" onclick="toggleWin('win-quiz')">
+                <div class="icon-img">❓</div>
+                <div class="icon-text">专属问答<br>Secret Quiz</div>
+            </div>
+        </div>
+
+        <div class="desktop-buddy">
+            <div class="buddy-avatar">👽</div>
+            <div style="font-size: 10px; background: #fff; padding: 2px; border: 1px solid #7c6895; margin-top: 5px;">咕咕嘎嘎</div>
+        </div>
+
+        <div id="win-mailbox" class="win-window" style="top: 20px; left: 20px; width: 560px; height: 440px;" data-default-top="20px" data-default-left="20px" data-default-w="560px" data-default-h="440px">
+            <div class="win-header" onmousedown="dragMouseDown(event, 'win-mailbox')" ondblclick="centerWin('win-mailbox')" title="双击恢复居中">
+                <span>📬 zkf饲养手册</span>
+                <div class="win-controls">
+                    <span class="win-btn max-btn" onclick="toggleMaximize('win-mailbox')">□</span>
+                    <span class="win-btn" onclick="toggleWin('win-mailbox')">X</span>
+                </div>
+            </div>
+            <div class="win-body" style="display: flex; flex-direction: column;">
+                <div class="manual-badge">记录员：zwt</div>
+                <div style="display: flex; gap: 15px; flex: 1; height: calc(100% - 30px);">
+                    <div id="manual-nav" style="width: 130px; border-right: 1px solid #ccc; padding-right: 8px; flex-shrink: 0; overflow-y: auto;">
+                    </div>
+                    <div id="mail-content" style="flex: 1; font-size: 12px; line-height: 1.8; background: #fff; padding: 12px; border: 1px inset #ccc; overflow-y: auto;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="win-photos" class="win-window" style="top: 100px; left: 160px; width: 640px; height: 520px;" data-default-top="100px" data-default-left="160px" data-default-w="640px" data-default-h="520px">
+            <div class="win-header" onmousedown="dragMouseDown(event, 'win-photos')" ondblclick="centerWin('win-photos')" title="双击恢复居中">
+                <span>🖼️ Photo Drawer (3D Flip Cards)</span>
+                <div class="win-controls">
+                    <span class="win-btn max-btn" onclick="toggleMaximize('win-photos')">□</span>
+                    <span class="win-btn" onclick="toggleWin('win-photos')">X</span>
+                </div>
+            </div>
+            <div class="win-body">
+                <div class="gallery-grid">
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '1.jpg')">🔍 放大</button>
+                                    <img src="1.jpg" alt="1">
+                                </div>
+                                <div class="label"><span>01. 第一个礼物</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_01.TXT</div>
+                                <div class="text-content">你送我的第一个礼物。虽然是在高考期间，嗯感觉没什么缘由。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '2.jpg')">🔍 放大</button>
+                                    <img src="2.jpg" alt="2">
+                                </div>
+                                <div class="label"><span>02. 第一张合照</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_02.TXT</div>
+                                <div class="text-content">第一张合照，楼梯间好闷好热，我好像还弹飞了。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '3.jpg')">🔍 放大</button>
+                                    <img src="3.jpg" alt="3">
+                                </div>
+                                <div class="label"><span>03. 第一次出去玩</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_03.TXT</div>
+                                <div class="text-content">第一次出去玩，拍照就模仿我，学人精。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '4.jpg')">🔍 放大</button>
+                                    <img src="4.jpg" alt="4">
+                                </div>
+                                <div class="label"><span>04. 第一张大头贴</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_04.TXT</div>
+                                <div class="text-content">第一张大头贴，我感觉我长得都有点像个馒头，但我好像每次拍大头贴都很丑所以之后就没拍了。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '5.jpg')">🔍 放大</button>
+                                    <img src="5.jpg" alt="5">
+                                </div>
+                                <div class="label"><span>05. 猫耳发夹</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_05.TXT</div>
+                                <div class="text-content">喜欢这个照片，我在天津出去玩也看到猫耳的发夹，比划了一下默默放回去了，买这种东西不是智力健全的人会做的。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '6.jpg')">🔍 放大</button>
+                                    <img src="6.jpg" alt="6">
+                                </div>
+                                <div class="label"><span>06. 牵手</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_06.TXT</div>
+                                <div class="text-content">哦哦我就发现拉手很舒服。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '7.jpg')">🔍 放大</button>
+                                    <img src="7.jpg" alt="7">
+                                </div>
+                                <div class="label"><span>07. 小熊与干花</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_07.TXT</div>
+                                <div class="text-content">它现在活得很好，就是那个干花可能被我妈扔了。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '8.jpg')">🔍 放大</button>
+                                    <img src="8.jpg" alt="8">
+                                </div>
+                                <div class="label"><span>08. 地下恋ing</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_08.TXT</div>
+                                <div class="text-content">地下恋ing。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '9.jpg')">🔍 放大</button>
+                                    <img src="9.jpg" alt="9">
+                                </div>
+                                <div class="label"><span>09. 玩手ing</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_09.TXT</div>
+                                <div class="text-content">就是很喜欢玩手呀。直到今天也非常感谢你，不管怎么样也是一种学习了。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '10.jpg')">🔍 放大</button>
+                                    <img src="10.jpg" alt="10">
+                                </div>
+                                <div class="label"><span>10. 手*2</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_10.TXT</div>
+                                <div class="text-content">虽然你的手也不大吧，但足够包住我的了。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '11.jpg')">🔍 放大</button>
+                                    <img src="11.jpg" alt="11">
+                                </div>
+                                <div class="label"><span>11. 上海必吃榜</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_11.TXT</div>
+                                <div class="text-content">没有送到嘴边还不咬的道理吧，生气也要咬开心也要咬。喜欢你才咬。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '12.jpg')">🔍 放大</button>
+                                    <img src="12.jpg" alt="12">
+                                </div>
+                                <div class="label"><span>12. 那么我坤续偷拍</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_12.TXT</div>
+                                <div class="text-content">可是就这样牵着手走路就很开心呀。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '13.jpg')">🔍 放大</button>
+                                    <img src="13.jpg" alt="13">
+                                </div>
+                                <div class="label"><span>13. 就不发给你</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_13.TXT</div>
+                                <div class="text-content">神秘曝光，不过我的口红颜色和你衣服很搭。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '14.jpg')">🔍 放大</button>
+                                    <img src="14.jpg" alt="14">
+                                </div>
+                                <div class="label"><span>14. 那么我坤续偷拍*2</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_14.TXT</div>
+                                <div class="text-content">记录狗狗是主人的好习惯。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '15.jpg')">🔍 放大</button>
+                                    <img src="15.jpg" alt="15">
+                                </div>
+                                <div class="label"><span>15. bw！</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_15.TXT</div>
+                                <div class="text-content">我非常非常非常非常开心的一天，虽然也非常非常非常非常累吧，但还好有zkf帮我推箱子借我拍立得帮我买东西在我脚抽筋的时候帮我拉伸给我带吃的喝的，好辛苦呀真喜欢你。不过你也是真的一大早完全没认出来我，但我确实一年这种盛装程度不会超过两次吧所以原谅了。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '16.jpg')">🔍 放大</button>
+                                    <img src="16.jpg" alt="16">
+                                </div>
+                                <div class="label"><span>16. suki</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_16.TXT</div>
+                                <div class="text-content">醉师傅牛逼，我好想吃啊都要哭了还一直在出新品看的我好生气。礼物也非常好看呀，感觉你比我动手能力强多了，是不是完全和传统的情谊送礼方式反过来了？本子带在身边呢，虽然军训太累了就算想到你也没空写。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '17.jpg')">🔍 放大</button>
+                                    <img src="17.jpg" alt="17">
+                                </div>
+                                <div class="label"><span>17. 就不发给你*2</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_17.TXT</div>
+                                <div class="text-content">看在今天是你生日的份上公开了大量隐藏照片，我真好。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '18.jpg')">🔍 放大</button>
+                                    <img src="18.jpg" alt="18">
+                                </div>
+                                <div class="label"><span>18. 蛋糕！生日快乐！</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_18.TXT</div>
+                                <div class="text-content">生日就要吃蛋糕啊，我现在做这个东西的时候并不知道你是要怎么过生日呢，如果已经提前回家吃过蛋糕了那今天就再吃一个吧！我觉得这次约会很开心，可能做蛋糕真的挺好玩的，不过真的吃太撑了下次必须控制一下了，不过也可能是因为是走之前最后一次了？可惜那天东西太多都没办法拉手TT</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="img-box">
+                                    <button class="zoom-btn" onclick="openImageModal(event, '19.jpg')">🔍 放大</button>
+                                    <img src="19.jpg" alt="19">
+                                </div>
+                                <div class="label"><span>19. 我喜欢这个呀</span><span class="hint">[翻面]</span></div>
+                            </div>
+                            <div class="card-back">
+                                <div class="tag">FILE_19.TXT</div>
+                                <div class="text-content">怎么给了你一张这么完美的，唉。我感觉发网上都能起号成功了。喜欢。</div>
+                                <div class="flip-back-hint">[返回]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="win-game" class="win-window" style="top: 180px; left: 320px; width: 580px; height: 480px;" data-default-top="180px" data-default-left="320px" data-default-w="580px" data-default-h="480px">
+            <div class="win-header" onmousedown="dragMouseDown(event, 'win-game')" ondblclick="centerWin('win-game')">
+                <span>🎮 张凯风养成记.exe —— ⚠️ 提示：不要点击屏幕快进，让旁白自然出现，否则有卡住的风险</span>
+                <div class="win-controls">
+                    <span class="win-btn max-btn" onclick="toggleMaximize('win-game')">□</span>
+                    <span class="win-btn" onclick="toggleWin('win-game')">X</span>
+                </div>
+            </div>
+            <div class="win-body" style="padding: 0;">
+                <div class="gal-container" id="galContainer" onclick="handleGalClick(event)">
+                    <div class="gal-toast" id="galToast">提示信息</div>
+                    <div class="gal-status-bar">
+                        <span id="galChapter">第 1 幕</span>
+                        <div class="gal-stats">
+                            <span>社交: <span id="statSocial">0</span></span>
+                            <span>健康: <span id="statHealth">100</span></span>
+                            <span>智力: <span id="statIQ">0</span></span>
+                            <span>体力: <span id="statStamina">0</span></span>
+                            <span>名誉: <span id="statRep">0</span></span>
+                        </div>
+                    </div>
+                    <div class="gal-scene" id="galScene">
+                        <div class="bg-element" id="bgDecor">🍼</div>
+                        <div class="gal-char-container" id="galCharContainer">
+                            <img src="像素人zkf.png" class="gal-char" id="galCharZkf" style="display:none;" alt="ZKF">
+                            <img src="像素人zwt.png" class="gal-char female" id="galCharZwt" style="display:none;" alt="ZWT">
+                        </div>
+
+                        <div class="gal-center-overlay" id="galCenterOverlay" style="display:none;"></div>
+                    </div>
+
+                    <div class="gal-dialog-box">
+                        <div class="gal-speaker" id="galSpeaker">旁白</div>
+                        <div class="gal-text" id="galText">加载中...</div>
+                    </div>
+
+                    <div class="cake-overlay" id="cakeOverlay" style="display:none;">
+                        <div class="wish-hint">✨ 闭上眼睛许个愿吧 ✨<br><span style="font-size:11px; opacity:0.8;">(许愿完成后，点击蜡烛吹灭)</span></div>
+                        <div class="cake-graphic" id="cakeGraphic" onclick="blowOutCandle()">
+                            <div class="cake-image-box">
+                                <div class="candle-flame" id="candleFlame">🕯️</div>
+                                <img src="蛋糕_5.jpg" alt="Cake" onclick="openImageModal(event, '蛋糕_5.jpg')">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="envelope-modal-overlay" id="envelopeModal" style="display:none;" onclick="event.stopPropagation();">
+                        <div class="interactive-envelope" id="interactiveEnvelope" onclick="openLetter()">
+                            <div class="envelope-seal">💌</div>
+                            <div style="font-size: 11px; color: #5a384c; font-weight: bold; margin-top: 10px;">点击拆开信件</div>
+                        </div>
+
+                        <div class="letter-paper" id="letterPaper" style="display:none;">
+                            <div class="letter-close-btn" onclick="closeLetter()">X</div>
+                            <div style="font-weight: bold; font-size: 14px; color: #8a629b; margin-bottom: 12px; border-bottom: 1px dashed #7c6895; padding-bottom: 6px;">
+                                ✉️ 写给19岁张凯风.txt
+                            </div>
+                            <div class="letter-content-scroll" id="letterContent"></div>
+                            
+                            <div class="letter-footer-zip">
+                                <span style="font-size: 24px;">📦</span>
+                                <div>
+                                    <div style="font-size: 12px; font-weight: bold; color: #5a384c;">Secret_Archive.zip</div>
+                                    <div style="font-size: 11px; color: #8a629b;">打不开，手机上找我要吧。</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="win-quiz" class="win-window" style="top: 240px; left: 520px; width: 540px; height: 500px;" data-default-top="240px" data-default-left="520px" data-default-w="540px" data-default-h="500px">
+            <div class="win-header" onmousedown="dragMouseDown(event, 'win-quiz')" ondblclick="centerWin('win-quiz')">
+                <span>❓ Secret Quiz</span>
+                <div class="win-controls">
+                    <span class="win-btn max-btn" onclick="toggleMaximize('win-quiz')">□</span>
+                    <span class="win-btn" onclick="toggleWin('win-quiz')">X</span>
+                </div>
+            </div>
+            <div class="win-body">
+                <div id="quiz-container">
+                    <div id="quiz-question"></div>
+                    <div id="quiz-options"></div>
+                    <div id="quiz-msg" class="quiz-msg"></div>
+                    <button id="quiz-submit-btn" class="enter-btn" style="margin-top: 15px; display: none;" onclick="submitMultiAnswer()">提交选项</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="win-doc" class="win-window" style="top: 280px; left: 380px; width: 480px; height: 230px;" data-default-top="280px" data-default-left="380px" data-default-w="480px" data-default-h="230px">
+            <div class="win-header" onmousedown="dragMouseDown(event, 'win-doc')" ondblclick="centerWin('win-doc')">
+                <span>📄 我比较大方 你看完不删也行_3.docx</span>
+                <div class="win-controls">
+                    <span class="win-btn max-btn" onclick="toggleMaximize('win-doc')">□</span>
+                    <span class="win-btn" onclick="toggleWin('win-doc')">X</span>
+                </div>
+            </div>
+            <div class="win-body" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="font-size: 12px; color: #666; font-style: italic; line-height: 1.5;">
+                    Because it was prepared long ago, it might not be comprehensive, just bear with it.
+                </div>
+                
+                <div class="doc-link-card">
+                    <a class="doc-download-link" onclick="downloadEmbeddedDocx()">
+                        📝 我比较大方 你看完不删也行_3.docx
+                    </a>
+                    <button class="enter-btn" style="margin-top:0;" onclick="downloadEmbeddedDocx()">📥 下载 Word</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="taskbar">
+        <button class="start-btn" onclick="resetAllWindows()">🌸 Reset Windows</button>
+        <button class="start-btn" onclick="alert('工科女好浪漫')">os</button>
+    </div>
+
+    <script>
+        const letterTxtContent = `19岁生日快乐呀。
+不知道19岁的世界是什么样的。sxy是第一个过生日的女生，她18岁的时候，我问她，18岁有什么感觉，她开玩笑说感觉一下子变成熟了。后来我18岁了，在我朋友18岁生日的时候我写信告诉她18岁和想象中不一样，很平淡，没感觉。但是我现在依然会对19岁的世界感到好奇，你先帮我探探路吧。
+就觉得你是那种会感恩母父说谢谢你们带我来到这个世界的那种人，不是说多么热爱生活，但比我强点。看见你就总感觉你很幸福，很羡慕你呢。我呢，却会质疑这种无视意愿擅自带我来到这里的行为。很疑惑这样两个人会在一起，你也有时候会觉得我特别负能量，但这个我也改不掉，我只能说以后在你面前少说这些。所以说可能世界上的事情还真的挺神奇，我也没想到我们会在一起。那我也感谢一下你的妈妈吧，带你来到这里，让我能遇到你，你也记得在今天感谢一下她，一个女性决心为一个生命负责是要付出和牺牲很多的，是很伟大的。
+19岁，我估谋着也和18岁没什么不同，可能你还是踢足球会受伤，会吃上顿没下顿，会临时抱佛脚，会惹我生气，也会让我开心。不过呢，无论怎么样，希望你享受19岁的生活，要照顾好自己，要健康开心，别的我就不说什么了。刚刚许了什么愿可以告诉我吗？网上有个很搞笑的，说大人们告诉小孩愿望说出来就不灵了，是因为小孩说出来的话大人就得想办法满足，所以让他们不说出来，这样他们只会质疑上天和命运，不会责怪大人。但是我呢，很厉害，如果可以，我会乐意满足你的愿望的。
+这是我陪你过的第一个生日，好厉害，我是说我自己。这个网站依旧是跑死了我和我的Gemini，每天下训就是疯狂调试，胆战心惊用校园网开vpn。记不记得我说，你会后悔的。因为当时你惹我生气，而我却正在为了你的生日困到飞起也还在改代码，站军姿的时候闭眼睡觉还要被教官点名。因为想着这个网页已经做了这么久，无论如何也要发出去，所以你惹我生气我就忍了，不然万一没机会发出去了太可惜了，我很累的。所以也是在做这个网站的时候，有感而发你应该对我再好点，现在可以理解了吗？是不是很合理的要求？
+19岁生日快乐，希望在未来的日子里，不论怎么样，你的世界依然熠熠生辉，鲜花和掌声滔滔不绝，只要上海的雨还在下，小狗还在摇尾巴，就永远还有人爱你。也不知道你现在是在熬夜看这个网页还是白天找了个时间，不过你应该不会只看一次，毕竟我这个网页有很多细节，自己慢慢品味吧。不管现在是什么时间，祝你今天睡个好觉。`;
+
+        const manualRules = {
+            1: { title: "第1条守则", text: "要注意细节：zkf是心思很多的品种，要仔细发现他每一句话、每一张照片、每一条朋友圈里面的小巧思，如果发现了，他会很开心，因为其实那些都是在说：最喜欢zwt了！" },
+            2: { title: "第2条守则", text: "要用心对待：不要总敷衍zkf，不要总不理zkf，他会难过的。当然，要是我先难过的那就另说，一切以zwt的心情为准。" },
+            3: { title: "第3条守则", text: "要说喜欢他：zkf记性好又不好的，他不会忘记我喜欢他，但还是想常常告诉他，毕竟我好像是有个特别善变的形象。" },
+            4: { title: "第4条守则", text: "要给他安全感：就算zkf觉得别的人更好更优秀，我也最喜欢zkf。" },
+            5: { title: "第5条守则", text: "要多夸夸他：zkf是一个很能干的品种，也很可靠，但他并不是一直都喜欢做计划喜欢帮别人扛东西的，要夸zkf，要谢谢他，要奖励他。" },
+            6: { title: "第6条守则", text: "要多观察他：zkf是个进入成年期后变化很小的品种，多观察他发现他哪里有变化，穿了新衣服，剪了头发，又多了伤口，更喜欢zwt了，都要及时记录。" },
+            7: { title: "第7条守则", text: "要记得想他：饲养员远程照顾zkf，要照顾好zkf的分离焦虑，要让他知道一千公里之外的zwt总会想起他。" },
+            8: { title: "第8条守则", text: "zkf喜欢吃甜的：但是吃甜的太多会变丑，所以额努力提醒他吧。" },
+            9: { title: "第9条守则", text: "zkf喜欢踢球：虽然受伤了晒黑了我都不是很喜欢，但要支持他的爱好，zkf踢球很厉害，而且这很健康。会让小腿变得很好看。" },
+            10: { title: "第10条守则", text: "zkf很能吃：但好像吃不过我啊，然后吃饭也很不规律，虽然我也这样，但是这样对身体不太好。我总担心他。但不吃内脏。" },
+            11: { title: "第11条守则", text: "zkf喜欢猫：我也喜欢猫，不过我也不讨厌狗。zkf害怕大狗，我要保护他。" },
+            12: { title: "第12条守则", text: "zkf体力很好：总是出去走几万步，和我出去背好几个包拎好多东西也不说累，也不怕热，总之和我比起来，好像哪里都挺强的。" },
+            13: { title: "第13条守则", text: "zkf有选择困难症：总是自己看很久，最后还是我来定。下次就都选我喜欢的就好了，不用纠结了，怎么样？" },
+            14: { title: "第14条守则", text: "zkf喜欢打游戏：什么都会打吧，我不知道他玩的怎么样，反正玩起来也基本不理我了。他也会打很多种扑克，掼蛋。我希望他会打麻将，这样我们就可以一起玩，但是他要是赢了，我会挂脸的。" },
+            15: { title: "第15条守则", text: "zkf喜欢看动漫：老二次元吗？我不知道，们二次元的定义太复杂，而我只是个喜欢吃饭看番下饭的小女孩。他喜欢青春之旅，不过他们好像说漫画里的走向不太对，我记得动漫里男女主也还没在一起吧，太久了记不清了。不过和他一起看番就有一种淡淡的幸福（？感谢正相反的你与我，感谢抖音推流，感谢谷的cv，不然可能就没有今天。" },
+            16: { title: "第16条守则", text: "zkf喜欢玩原神：他喜欢可莉，但我看他是芙宁娜的狗，还会发钟离表情包。我不了解这个游戏，反正他开心就好，然后不要变得很恶心就好。" },
+            17: { title: "第17条守则", text: "zkf喜欢玩养成游戏：在表白之前经常试图用这件事劝退自己，和sxy讲了之后她的第一反应也是：啊他不是玩养成游戏吗。不过我也玩乙游，不过不过，我觉得这不太一样，但我也不是很想说了。反正之前zkf在我面前玩被我骂了然后我很伤心，后来他就不这样了。因为我发现陪男朋友买什么他喜欢的角色周边还是太超过了，我做不到。zkf自己看着办吧，记录员对于这个情况也很无力。" },
+            18: { title: "第18条守则", text: "zkf很聪明：感觉，不是否定他的努力，只是感觉他好像比别人更轻松地取得更理想的结果，所以觉得他很厉害，脑子很好使，我从小就羡慕这种人呢。所以我觉得他几乎什么都能做到，只要他想。但是由此，如果他没成功觉得难过的话，我也会很难过，因为我不想他难过。有首歌我不是很喜欢嘛，里面有句歌词。不是筋疲力尽就能如愿以偿。虽然真轮到我了绝对不接受这种屁话，但还是希望zkf不要有压力，不要焦虑，不要难受，因为经历过所以知道这很痛苦，希望他完全避开这些。" },
+            19: { title: "第19条守则", text: "zkf19岁了：zkf喜欢我，zkf带着喜欢我这件事从18岁来到19岁，我大概也是命挺好的，小时候家里人给算的，就也确实可能，虽然我可能每天活得很悲观很乐乐吧，希望zkf也是可以沾到我的气运，19岁一切顺利，生日快乐^^。" }
+        };
+
+        function initManualNav() {
+            const nav = document.getElementById('manual-nav');
+            nav.innerHTML = '';
+            for (let i = 1; i <= 19; i++) {
+                const item = document.createElement('div');
+                item.id = `mail-tab-${i}`;
+                item.className = `mail-nav-item ${i === 1 ? 'active' : ''}`;
+                item.onclick = () => switchMail(i);
+                item.innerText = `• 第${i}条守则`;
+                nav.appendChild(item);
+            }
+        }
+
+        function switchMail(id) {
+            document.querySelectorAll('.mail-nav-item').forEach(el => el.classList.remove('active'));
+            const activeTab = document.getElementById(`mail-tab-${id}`);
+            if (activeTab) activeTab.classList.add('active');
+
+            const rule = manualRules[id];
+            if (rule) {
+                document.getElementById('mail-content').innerHTML = `
+                    <div style="font-weight: bold; font-size: 13px; color: #7c6895; margin-bottom: 8px;">${rule.title}</div>
+                    <div>${rule.text}</div>
+                `;
+            }
+        }
+
+        function openSystem() {
+            document.getElementById('entrance-screen').style.display = 'none';
+            toggleWin('win-mailbox');
+        }
+
+        function toggleWin(id) {
+            const win = document.getElementById(id);
+            if (win.style.display === 'flex') {
+                win.style.display = 'none';
+            } else {
+                win.style.display = 'flex';
+                bringToFront(win);
+                if(id === 'win-game' && galStep === 0) {
+                    renderGalStep(1);
+                }
+            }
+        }
+
+        function bringToFront(win) {
+            document.querySelectorAll('.win-window').forEach(w => w.style.zIndex = 100);
+            win.style.zIndex = 101;
+        }
+
+        function toggleMaximize(id) {
+            const win = document.getElementById(id);
+            if (win.getAttribute('data-maximized') === 'true') {
+                win.style.top = win.getAttribute('data-default-top');
+                win.style.left = win.getAttribute('data-default-left');
+                win.style.width = win.getAttribute('data-default-w');
+                win.style.height = win.getAttribute('data-default-h');
+                win.setAttribute('data-maximized', 'false');
+            } else {
+                win.style.top = '0px';
+                win.style.left = '0px';
+                win.style.width = '100vw';
+                win.style.height = 'calc(100vh - 35px)';
+                win.setAttribute('data-maximized', 'true');
+            }
+        }
+
+        function centerWin(id) {
+            const win = document.getElementById(id);
+            win.style.top = '50%';
+            win.style.left = '50%';
+            win.style.transform = 'translate(-50%, -50%)';
+        }
+
+        function resetAllWindows() {
+            document.querySelectorAll('.win-window').forEach(win => {
+                win.style.top = win.getAttribute('data-default-top');
+                win.style.left = win.getAttribute('data-default-left');
+                win.style.width = win.getAttribute('data-default-w');
+                win.style.height = win.getAttribute('data-default-h');
+                win.style.transform = 'none';
+                win.setAttribute('data-maximized', 'false');
+                win.style.display = 'none';
+            });
+            toggleWin('win-mailbox');
+        }
+
+        function openImageModal(e, src) {
+            e.stopPropagation();
+            const modal = document.getElementById('image-modal');
+            const img = document.getElementById('modal-img');
+            img.src = src;
+            modal.style.display = 'flex';
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').style.display = 'none';
+        }
+
+        let activeWin = null, offsetX = 0, offsetY = 0;
+        function dragMouseDown(e, id) {
+            activeWin = document.getElementById(id);
+            bringToFront(activeWin);
+            if (activeWin.getAttribute('data-maximized') === 'true') return;
+            
+            const rect = activeWin.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            
+            document.onmousemove = elementDrag;
+            document.onmouseup = closeDragElement;
+        }
+
+        function elementDrag(e) {
+            if (!activeWin) return;
+            activeWin.style.transform = 'none';
+            activeWin.style.left = (e.clientX - offsetX) + 'px';
+            activeWin.style.top = (e.clientY - offsetY) + 'px';
+        }
+
+        function closeDragElement() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+            activeWin = null;
+        }
+
+        const quizData = [
+            {
+                type: 'single',
+                q: "1. 我第一次注意到你是因为？",
+                options: ["A.运动会跑步很快", "B.坐的很近就注意到了", "C.长得有点像一个明星", "D.因为太喜欢玩游戏在班里出名"],
+                correct: 2
+            },
+            {
+                type: 'single',
+                q: "2. 我最喜欢看的番？",
+                options: ["A.正相反的你与我", "B.青春之旅", "C.死亡笔记", "D.MyGo"],
+                correct: 2
+            },
+            {
+                type: 'multi',
+                q: "3. 我很累的时候最需要？【多选题】",
+                options: ["A.抱抱", "B.亲亲", "C.醉师傅", "D.听到一句加油/辛苦了"],
+                correct: [0, 2]
+            },
+            {
+                type: 'multi',
+                q: "4. 我最喜欢的约会项目是？【多选题】",
+                options: ["A.有空调都喜欢", "B.去某个景点参观", "C.在凉爽的傍晚散步", "D.吃好吃的"],
+                correct: [2, 3]
+            },
+            {
+                type: 'special',
+                q: "5. 我为什么喜欢zkf？",
+                options: ["A.我也不知道", "B.压力太大了", "C.没什么好喜欢的", "D.因为zkf喜欢我"]
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let selectedMulti = [];
+        let specialChosen = new Set();
+
+        function renderQuiz() {
+            const q = quizData[currentQuizIndex];
+            const qEl = document.getElementById('quiz-question');
+            const container = document.getElementById('quiz-options');
+            const msgEl = document.getElementById('quiz-msg');
+            const submitBtn = document.getElementById('quiz-submit-btn');
+
+            qEl.innerText = q.q;
+            container.innerHTML = '';
+            msgEl.innerText = '';
+            selectedMulti = [];
+
+            if (q.type === 'multi') {
+                submitBtn.style.display = 'block';
+            } else {
+                submitBtn.style.display = 'none';
+            }
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.innerText = opt;
+
+                if (q.type === 'single') {
+                    btn.onclick = () => checkSingle(idx);
+                } else if (q.type === 'multi') {
+                    btn.onclick = () => toggleMultiSelect(btn, idx);
+                } else if (q.type === 'special') {
+                    btn.onclick = () => handleSpecialChoice(btn, idx);
+                }
+
+                container.appendChild(btn);
+            });
+        }
+
+        function triggerWrongEffect(customMsg) {
+            const quizWin = document.getElementById('win-quiz');
+            const msgEl = document.getElementById('quiz-msg');
+
+            msgEl.innerText = customMsg || "这都不知道?好感度-19";
+            quizWin.classList.add('shake-animation');
+
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+
+            setTimeout(() => {
+                quizWin.classList.remove('shake-animation');
+            }, 400);
+        }
+
+        function checkSingle(idx) {
+            const q = quizData[currentQuizIndex];
+            if (idx === q.correct) {
+                currentQuizIndex++;
+                renderQuiz();
+            } else {
+                triggerWrongEffect();
+            }
+        }
+
+        function toggleMultiSelect(btn, idx) {
+            if (selectedMulti.includes(idx)) {
+                selectedMulti = selectedMulti.filter(i => i !== idx);
+                btn.classList.remove('selected');
+            } else {
+                selectedMulti.push(idx);
+                btn.classList.add('selected');
+            }
+        }
+
+        function submitMultiAnswer() {
+            const q = quizData[currentQuizIndex];
+            const isCorrect = selectedMulti.length === q.correct.length && selectedMulti.every(val => q.correct.includes(val));
+
+            if (isCorrect) {
+                currentQuizIndex++;
+                renderQuiz();
+            } else {
+                triggerWrongEffect("多选可能有点难？最多也就试4C2次，双选。");
+            }
+        }
+
+        function handleSpecialChoice(btn, idx) {
+            specialChosen.add(idx);
+            triggerWrongEffect();
+
+            if (specialChosen.size === 4) {
+                setTimeout(() => {
+                    alert("因用户多次回答错误，系统错乱，这里有一份拯救世界的文件，请认真查看。");
+                    openDocWindow();
+                }, 500);
+            }
+        }
+
+        function openDocWindow() {
+            toggleWin('win-doc');
+        }
+
+        const docTextLines = [
+            "1.\t是zkf", "2.\t坐我前面", "3.\t坐我后面", "4.\t坐我右边的右边", "5.\t爱干净",
+            "6.\t头发长长的好看", "7.\t肩膀很平", "8.\t不胖也不瘦", "9.\t别人跟你说了个我认为很无聊的东西你也能回上话", "10.\t不怎么说脏话",
+            "11.\t不玩烂梗", "12.\t安静 不吵", "13.\t泪痣", "14.\t手还可以", "15.\t小腿好看",
+            "16.\t晚一总是写到睡着也不趴下，一直点头，很傻", "17.\t帮我传一大坨试卷", "18.\t表白拒绝我的时候夸我", "19.\t表白拒绝我的时候很礼貌", "20.\t表白拒绝我之后看到我发的莫名其妙的消息还是回复了",
+            "21.\t我不回你消息还能给我发表情求我回你", "22.\t爱猫", "23.\t给我买的奶茶被别人拿走了呜呜呜", "24.\t给我传纸条很隐秘", "25.\t给我传纸条很不隐秘",
+            "26.\t看我的纸条笑出声", "27.\t跟我去无障碍", "28.\t被我踢", "29.\t要和我一起拍拍立得", "30.\t在宿舍床上扭成蛆说zwt好可爱想牵手",
+            "31.\t拒绝表白之后又后悔", "32.\t喜欢我", "33.\t追光歌会贴我肩膀上", "34.\t把我喊到无障碍要我踢你因为不想让我觉得你是个变态", "35.\t觉得我可爱",
+            "36.\t突然拔下扣子送给我", "37.\t有一次打雷我被吓得叫 你回头看我然后笑", "38.\t有一次午睡别人突然来把你喊醒然后你又把我给吓醒之后回头看我", "39.\t躲在楼梯间拍照", "40.\t被我骂了之后就改",
+            "41.\t印象里写字好看", "42.\t在人群中盯着我看（emm其实我不喜欢被盯着但目前感觉还可以因为你就还挺隐蔽的", "43.\t熬夜做行程", "44.\t会付钱的男人最帅了（你要是需要我给钱，直接说就行，但是别等事后再告诉我", "45.\t可以适应我一天吃一顿的安排",
+            "46.\t在外滩牵我手", "47.\t自己出站进站好几次也要送我到公交车站", "48.\t很会安排，就路线什么的，反正我不喜欢做这些", "49.\t能记住我很早之前说过的事（所以有时候你忘记，我就会很难过的，因为你给我这个预期了", "50.\t第一个和我出去记住不加蒜的人（好了其实因为我也没和别的朋友吃过几顿正餐",
+            "51.\t随身携带一堆我可能会用到的东西", "52.\t帮我拎包", "53.\t坐车的时候开门让我先进", "54.\t送我一个熊，已经变成干花了", "55.\t怕我裙子被风吹起来给我东西压着 虽然那天并不会",
+            "56.\t去问好多人约会该去哪里玩", "57.\t总觉得自己头发没有刚洗完的时候好看（我没看出区别", "58.\t剪头发之前会问我", "59.\t我喜欢你头发稍微长一点", "60.\t脸软软的",
+            "61.\t不听周杰伦", "62.\t被我骂了就去找军师说啊啊我是傻逼怎么办（现在应该不用了吧", "63.\t我不想回答的问题不喜欢的话题不逼我说", "64.\t我说讨厌你的时候你说喜欢我", "65.\t不随便把我的事告诉别人就算我没强调过",
+            "66.\t带着狗绳", "67.\t我一进厕所就会待很久但是也没催过我", "68.\t我出去玩喜欢看手机但是也没骂过我（你不喜欢的话要告诉我", "69.\t我出去玩有时候会带耳机但是也没骂我（你不喜欢的话要告诉我", "70.\t去浙江之前提醒我带什么什么东西，虽然我都带了",
+            "71.\t跟我看完晚安再睡", "72.\t耐心", "73.\t就算我觉得自己很烂你也会说我很好", "74.\t是我第一个表白的人", "75.\t在摩天轮上抱着我",
+            "76.\t脚抽筋了帮我", "77.\t夸我", "78.\t给我带吃的喝的", "79.\t打电话一起看电影看番", "80.\t陪我去买蛋糕",
+            "81.\t惹我生气的话会主动道歉然后解释原因", "82.\t被我咬", "83.\t可以靠在你身上睡着", "84.\t在浙江幽会", "85.\t可以抱抱抱很久还可以亲亲嘿嘿嘿",
+            "86.\t躺床上抱抱", "87.\t坐着靠着你睡", "88.\t给我盖被子", "89.\t大家唱歌的时候一直偷偷看我啊", "90.\t我说要喝古茗然后就拿手机开始查",
+            "91.\t因为我打麻将没回消息不开心之后告诉你这件事", "92.\t吃我挑剩下的东西", "93.\t想跑天津找我", "94.\t掐我脖子", "95.\t听我讲我感兴趣的东西就算听不懂也默默接受一堆输出",
+            "96.\t觉得我很厉害", "97.\t第一次去你学校是和我一起", "98.\t手机里存好多我照片", "99.\t默默视奸我状态然后留下痕迹", "100.\t是0910 是19岁生日快乐是zwt的"
+        ];
+
+        async function downloadEmbeddedDocx() {
+            if (!window.docx) {
+                alert("docx 库加载中，请稍后再试");
+                return;
+            }
+
+            const { Document, Packer, Paragraph, TextRun } = window.docx;
+
+            const paragraphs = docTextLines.map(line => {
+                return new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: line,
+                            font: "Calibri",
+                            size: 24
+                        })
+                    ]
+                });
+            });
+
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: paragraphs
+                }]
+            });
+
+            const blob = await Packer.toBlob(doc);
+            const filename = "我比较大方 你看完不删也行_3.docx";
+
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }
+
+        let galStep = 0;
+        let stats = { social: 0, health: 100, iq: 0, stamina: 0, rep: 0 };
+        let typeTimer = null;
+        let isTextComplete = false;
+        let currentFullText = "";
+
+        const autoAdvanceSteps = [2, 3.5, 4.5, 5, 6.1, 6.4, 7, 8];
+
+        function handleGalClick(e) {
+            if (e.target.closest('#galCenterOverlay') || e.target.closest('#cakeOverlay') || e.target.closest('#envelopeModal')) {
+                return;
+            }
+
+            if (!isTextComplete) {
+                if (typeTimer) clearInterval(typeTimer);
+                typeTimer = null;
+                document.getElementById('galText').innerText = currentFullText;
+                isTextComplete = true;
+                return;
+            }
+
+            if (autoAdvanceSteps.includes(galStep)) {
+                if (galStep === 2) renderGalStep(3);
+                else if (galStep === 3.5) renderGalStep(4);
+                else if (galStep === 4.5) renderGalStep(5);
+                else if (galStep === 5) renderGalStep(6);
+                else if (galStep === 6.1) renderGalStep(6.2);
+                else if (galStep === 6.4) renderGalStep(7);
+                else if (galStep === 7) renderGalStep(8);
+                else if (galStep === 8) startCakeWishScene();
+            }
+        }
+
+        function updateGalStats(delta) {
+            if (delta.social) stats.social += delta.social;
+            if (delta.health) stats.health += delta.health;
+            if (delta.iq) stats.iq += delta.iq;
+            if (delta.stamina) stats.stamina += delta.stamina;
+            if (delta.rep) stats.rep += delta.rep;
+
+            document.getElementById('statSocial').innerText = stats.social;
+            document.getElementById('statHealth').innerText = stats.health;
+            document.getElementById('statIQ').innerText = stats.iq;
+            document.getElementById('statStamina').innerText = stats.stamina;
+            document.getElementById('statRep').innerText = stats.rep;
+        }
+
+        function showGalToast(msg) {
+            const toast = document.getElementById('galToast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+
+        function setGalChar(zkfShow, zwtShow, animZkf = '', animZwt = '') {
+            const zkfImg = document.getElementById('galCharZkf');
+            const zwtImg = document.getElementById('galCharZwt');
+
+            zkfImg.style.display = zkfShow ? 'block' : 'none';
+            zwtImg.style.display = zwtShow ? 'block' : 'none';
+
+            zkfImg.className = 'gal-char ' + animZkf;
+            zwtImg.className = 'gal-char female ' + animZwt;
+        }
+
+        function updateStageTheme(themeColor, sceneBg, decorEmoji) {
+            document.getElementById('galContainer').style.background = themeColor;
+            document.getElementById('galScene').style.background = sceneBg;
+            document.getElementById('bgDecor').innerText = decorEmoji;
+        }
+
+        function typeWriterText(fullText, onComplete) {
+            const textEl = document.getElementById('galText');
+            textEl.innerText = "";
+            if (typeTimer) clearInterval(typeTimer);
+
+            currentFullText = fullText;
+            isTextComplete = false;
+
+            let i = 0;
+            typeTimer = setInterval(() => {
+                textEl.innerText += fullText.charAt(i);
+                i++;
+                if (i >= fullText.length) {
+                    clearInterval(typeTimer);
+                    typeTimer = null;
+                    isTextComplete = true;
+                    if (onComplete) onComplete();
+                }
+            }, 35);
+        }
+
+        function renderCenterOptions(optionsList) {
+            const overlay = document.getElementById('galCenterOverlay');
+            overlay.innerHTML = '';
+            overlay.style.display = 'flex';
+
+            optionsList.forEach(opt => {
+                if(opt.type === 'input') {
+                    const group = document.createElement('div');
+                    group.className = 'gal-otome-input-group';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'gal-otome-input';
+                    input.placeholder = opt.placeholder || '请输入...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'gal-otome-option';
+                    btn.style.width = '80px';
+                    btn.innerText = opt.btnText || '确定';
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        opt.onSelect(input.value);
+                    };
+
+                    group.appendChild(input);
+                    group.appendChild(btn);
+                    overlay.appendChild(group);
+                } else {
+                    const btn = document.createElement('button');
+                    btn.className = 'gal-otome-option';
+                    btn.innerText = opt.text;
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        opt.onSelect();
+                    };
+                    overlay.appendChild(btn);
+                }
+            });
+        }
+
+        function hideCenterOverlay() {
+            document.getElementById('galCenterOverlay').style.display = 'none';
+        }
+
+        function renderGalStep(step) {
+            galStep = step;
+            hideCenterOverlay();
+            const speaker = document.getElementById('galSpeaker');
+            const chapter = document.getElementById('galChapter');
+
+            switch(step) {
+                case 1:
+                    chapter.innerText = "第一幕：诞生";
+                    updateStageTheme('#fff0f5', 'linear-gradient(180deg, #ffe4e1 0%, #fff0f5 100%)', '👶');
+                    setGalChar(false, false);
+                    speaker.innerText = "旁白";
+                    
+                    typeWriterText("2007年9月10日，上海，一个男孩出生了，给这个小婴儿取个名字吧：", () => {
+                        renderCenterOptions([
+                            {
+                                type: 'input',
+                                placeholder: '输入名字...',
+                                btnText: '确定',
+                                onSelect: (val) => {
+                                    if (val.trim() === "张凯风") {
+                                        renderGalStep(2);
+                                    } else {
+                                        showGalToast("他不喜欢这个名字呢，再想想吧");
+                                    }
+                                }
+                            }
+                        ]);
+                    });
+                    break;
+
+                case 2:
+                    chapter.innerText = "第二幕：幼儿园";
+                    updateStageTheme('#ffe6ee', 'linear-gradient(180deg, #ffd1dc 0%, #ffe6ee 100%)', '🧸');
+                    setGalChar(true, false, 'char-bounce');
+                    updateGalStats({ social: 50, health: -1 });
+                    speaker.innerText = "张凯风";
+                    
+                    typeWriterText("稍稍长大一点了，去上幼儿园了！每天和朋友玩（社交+50），午睡睡不着躲着老师偷偷醒（健康-1）。");
+                    break;
+
+                case 3:
+                    chapter.innerText = "第三幕：小学生活";
+                    updateStageTheme('#ffedf0', 'linear-gradient(180deg, #fbc4ab 0%, #ffedf0 100%)', '⚽');
+                    setGalChar(true, false, 'char-grow');
+                    speaker.innerText = "旁白";
+                    updateGalStats({ iq: 100 });
+
+                    typeWriterText("幼儿园毕业之后去上小学了，剪了寸头，很凉快，巴适。也开始学习了（智力+100）。三年级，张凯风喜欢上了一项运动：", () => {
+                        renderCenterOptions([
+                            { text: '⚽ 足球', onSelect: () => { updateGalStats({ social: 100, stamina: 100 }); renderGalStep(3.5); } },
+                            { text: '🏀 篮球', onSelect: () => showGalToast("再想想？他最爱的运动是？") },
+                            { text: '🏓 乒乓球', onSelect: () => showGalToast("再想想？") }
+                        ]);
+                    });
+                    break;
+
+                case 3.5:
+                    chapter.innerText = "第三幕：小学生活";
+                    updateStageTheme('#ffedf0', 'linear-gradient(180deg, #fbc4ab 0%, #ffedf0 100%)', '⚽');
+                    setGalChar(true, false, 'char-bounce');
+                    speaker.innerText = "张凯风";
+                    
+                    typeWriterText("张凯风开始踢球，又认识了新朋友，也多了这项爱好！（社交+100，体力+100）");
+                    break;
+
+                case 4:
+                    chapter.innerText = "第四幕：初中时光";
+                    updateStageTheme('#f8e1ee', 'linear-gradient(180deg, #e8b4b8 0%, #f8e1ee 100%)', '🏫');
+                    setGalChar(true, false, 'char-shake');
+                    speaker.innerText = "旁白";
+
+                    typeWriterText("小学毕业了，张凯风要上初中了，去上哪个学校呢？", () => {
+                        renderCenterOptions([
+                            { text: '升学率很高的学校', onSelect: () => showGalToast("好像不太对，再选选看？") },
+                            { text: '没那么卷的学校', onSelect: () => { updateGalStats({ rep: 100, iq: 100 }); renderGalStep(4.5); } },
+                            { text: '很严格的学校', onSelect: () => showGalToast("好像不太对，再选选看？") },
+                            { text: '随便吧', onSelect: () => showGalToast("不行不行，认真选！") }
+                        ]);
+                    });
+                    break;
+
+                case 4.5:
+                    chapter.innerText = "第四幕：初中时光";
+                    updateStageTheme('#f8e1ee', 'linear-gradient(180deg, #e8b4b8 0%, #f8e1ee 100%)', '📚');
+                    setGalChar(true, false, 'char-bounce');
+                    speaker.innerText = "张凯风";
+                    
+                    typeWriterText("选了一所听起来没那么卷的学校，分班考考了年级第六（名誉+100，智力+100）！一开始食堂很好吃，放学时间也很早，虽然后来变坏了，但在学校交到了很多朋友，头发也慢慢留长了。");
+                    break;
+
+                case 5:
+                    chapter.innerText = "第五幕：高中岁月";
+                    updateStageTheme('#fff5f7', 'linear-gradient(180deg, #f7d6e0 0%, #fff5f7 100%)', '🎒');
+                    setGalChar(true, false, 'char-grow');
+                    speaker.innerText = "张凯风";
+                    
+                    typeWriterText("裸考来到了hesj。走读的生活很滋润，每天回家要吃一大盘夜宵，但是上学好累，不过可以踢球，参加了好多运动会项目，交到了很多朋友。高三住宿了。");
+                    break;
+
+                case 6:
+                    chapter.innerText = "第六幕：相遇与纠结";
+                    updateStageTheme('#fff0f6', 'linear-gradient(180deg, #fbc4ab 0%, #ffcad4 100%)', '🌸');
+                    setGalChar(true, true, 'char-shake', 'char-bounce');
+                    speaker.innerText = "张凯风 (OS)";
+
+                    typeWriterText("2026年4月17日，被奇怪的人（女生）表白了……", () => {
+                        renderCenterOptions([
+                            { text: '这人真奇怪啊', onSelect: () => renderGalStep(6.1) },
+                            { text: '好懵逼', onSelect: () => renderGalStep(6.1) },
+                            { text: '啥情况？', onSelect: () => renderGalStep(6.1) }
+                        ]);
+                    });
+                    break;
+
+                case 6.1:
+                    chapter.innerText = "第六幕：相遇与纠结";
+                    updateStageTheme('#fff0f6', 'linear-gradient(180deg, #ffcad4 0%, #ffe5ec 100%)', '💬');
+                    setGalChar(true, true, 'char-shake', '');
+                    speaker.innerText = "张凯风 (OS)";
+                    updateGalStats({ rep: -100000 });
+
+                    typeWriterText("但是呢，好像慢慢喜欢上她了，怎么办？\n\n5月17日，这个人又发了一堆消息，看到了，怎么回复呢？还是等一会儿再回吧，我就钓着人家怎么滴（名誉-100000）");
+                    break;
+
+                case 6.2:
+                    chapter.innerText = "第六幕：相遇与纠结";
+                    updateStageTheme('#fff0f6', 'linear-gradient(180deg, #ffcad4 0%, #ffe5ec 100%)', '❓');
+                    setGalChar(true, true, 'char-shake', 'char-shake');
+                    speaker.innerText = "张凯风 (OS)";
+
+                    typeWriterText("5月22日，她居然不回复我……好难受，怎么办，要不要和她表白呢？", () => {
+                        renderCenterOptions([
+                            { text: '要', onSelect: () => renderGalStep(6.3) }
+                        ]);
+                    });
+                    break;
+
+                case 6.3:
+                    chapter.innerText = "第六幕：相遇与纠结";
+                    updateStageTheme('#fff0f6', 'linear-gradient(180deg, #ffb7c5 0%, #ffe5ec 100%)', '💓');
+                    setGalChar(true, true, 'char-bounce', 'char-bounce');
+                    speaker.innerText = "张凯风 (OS)";
+
+                    typeWriterText("可是之前拒绝了她啊，好尴尬，真的要表白吗？", () => {
+                        renderCenterOptions([
+                            { text: '要', onSelect: () => renderGalStep(6.4) }
+                        ]);
+                    });
+                    break;
+
+                case 6.4:
+                    chapter.innerText = "第六幕：相遇与纠结";
+                    updateStageTheme('#fff0f6', 'linear-gradient(180deg, #ffb7c5 0%, #ffe5ec 100%)', '✨');
+                    setGalChar(true, true, 'char-bounce', 'char-bounce');
+                    speaker.innerText = "张凯风";
+
+                    typeWriterText("幸好，她还喜欢我。");
+                    break;
+
+                case 7:
+                    chapter.innerText = "第七幕：幸福日常";
+                    updateStageTheme('#ffeef2', 'linear-gradient(180deg, #ffc2d1 0%, #ffeef2 100%)', '💖');
+                    setGalChar(true, true, 'char-bounce', 'char-bounce');
+                    speaker.innerText = "张凯风";
+
+                    typeWriterText("日子非常平淡又幸福，和她在一起很开心，去了好多地方玩，嘿嘿。");
+                    break;
+
+                case 8:
+                    chapter.innerText = "第八幕：未完待续";
+                    updateStageTheme('#ffedf2', 'linear-gradient(180deg, #ffb7c5 0%, #ffedf2 100%)', '🎂');
+                    setGalChar(true, true, 'char-bounce', 'char-bounce');
+                    speaker.innerText = "旁白";
+
+                    typeWriterText("上大学了，之后的日子会怎么样还不清楚，未完待续吧。又是一年9月10号了……");
+                    break;
+            }
+        }
+
+        function startCakeWishScene() {
+            document.getElementById('cakeOverlay').style.display = 'flex';
+        }
+
+        function blowOutCandle() {
+            document.getElementById('candleFlame').style.display = 'none';
+            showGalToast("蜡烛吹灭啦！愿望全部生效！");
+            
+            setTimeout(() => {
+                document.getElementById('cakeOverlay').style.display = 'none';
+                document.getElementById('envelopeModal').style.display = 'flex';
+            }, 1000);
+        }
+
+        function openLetter() {
+            document.getElementById('interactiveEnvelope').style.display = 'none';
+            const paper = document.getElementById('letterPaper');
+            const content = document.getElementById('letterContent');
+            content.innerText = letterTxtContent;
+            paper.style.display = 'flex';
+        }
+
+        function closeLetter() {
+            document.getElementById('envelopeModal').style.display = 'none';
+        }
+
+        window.onload = function() {
+            initManualNav();
+            switchMail(1);
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>
